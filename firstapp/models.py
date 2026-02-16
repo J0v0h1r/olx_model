@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-
+    
 
 
 class Account(models.Model):
@@ -9,7 +9,7 @@ class Account(models.Model):
     phone = models.CharField(max_length=20)
     full_name = models.CharField(max_length=100)
     password = models.CharField(max_length=100)
-    balance = models.FloatField()
+    balance = models.DecimalField( max_digits=12, decimal_places=2)
 
     def __str__(self):
         return self.full_name
@@ -20,41 +20,38 @@ class Account(models.Model):
 from django.db import models
 
 class Category(models.Model):
-    CATEGORY_CHOICES = [
-        ('car', 'Car'),
-        ('job', 'Job'),
-        ('house', 'House'),
-        ('animal', 'Animal'),
-    ]
-
-    tip = models.CharField(
-        max_length=50,
-        choices=CATEGORY_CHOICES,
-        unique=True
-    )
+    tip  = models.CharField( max_length=50,unique=True)
 
     def __str__(self):
-        return self.get_tip_display()
+        return self.tip
     
 
 
+class Region(models.Model):
+    regions = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.regions
+
+
+
+"""class Images(models.Model):
+        image = models.ImageField(upload_to='ads_images/')
+        
+    
+        def __str__(self):
+            return f"Image for AD: {self.ad.title}"
+        """
+
+
+
 class AD(models.Model):
-    category = models.ForeignKey(
-        Category,
-        on_delete=models.CASCADE,
-        related_name='ads_by_category'  # unique reverse name
-    )
-    tip = models.ForeignKey(
-        Category,
-        on_delete=models.CASCADE,
-        related_name='ads_by_tip'  # unique reverse name
-    )
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='ads_by_category', )
+    region = models.ForeignKey(Region, on_delete=models.CASCADE)
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     describe = models.TextField()
-    region = models.CharField(max_length=200)
-    price = models.FloatField()
+    price = models.DecimalField(max_digits=11, decimal_places=1)
     title = models.CharField(max_length=200)
-    # image = models.ImageField(upload_to='ads_images/')
 
     def __str__(self):
         return f"{self.title} - {self.region} - {self.price}"
@@ -65,6 +62,8 @@ class AD(models.Model):
 class Car(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    region = models.ForeignKey(Region, on_delete=models.CASCADE)
+    reklama = models.ForeignKey(AD, on_delete=models.CASCADE)
     marka = models.CharField(max_length=100)
     model = models.CharField(max_length=100)
     year = models.IntegerField()
@@ -83,10 +82,12 @@ class Car(models.Model):
 class Job(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    region = models.ForeignKey(Region, on_delete=models.CASCADE)
+    reklama = models.ForeignKey(AD, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     company = models.CharField(max_length=100)
     category_job = models.CharField(max_length=100)
-    salary = models.FloatField()
+    salary = models.DecimalField(max_digits=11, decimal_places=2)
     tipwork = models.CharField(max_length=100)
     tipzanyatosti = models.CharField(max_length=100)
 
@@ -99,15 +100,16 @@ class Job(models.Model):
 class House(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    region = models.ForeignKey(Region, on_delete=models.CASCADE)
+    reklama = models.ForeignKey(AD, on_delete=models.CASCADE)
     address = models.CharField(max_length=200)
-    price = models.FloatField()
-    region = models.CharField(max_length=100)
+    price = models.DecimalField(max_digits=11, decimal_places=2)
+
     tip = models.CharField(max_length=100)
     describe = models.TextField()
     area = models.FloatField()
     rooms = models.IntegerField()
-    gotinflat = models.TextField()
-    floor = models.IntegerField()
+    floor = models.FloatField()
 
     def __str__(self):
         return f"{self.address} - {self.region} - {self.price}"
@@ -118,15 +120,16 @@ class House(models.Model):
 class Animal(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    region = models.ForeignKey(Region, on_delete=models.CASCADE)
+    reklama = models.ForeignKey(AD, on_delete=models.CASCADE)
     tip = models.CharField(max_length=100)
     poroda = models.CharField(max_length=100)
+    age = models.FloatField()
+    color = models.CharField(max_length=50)
+
 
     def __str__(self):
         return f"{self.tip} - {self.poroda}"
-
-
-    
-
 
 
     
